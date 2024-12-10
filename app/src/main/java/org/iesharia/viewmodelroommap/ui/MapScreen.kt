@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.utsman.osmandcompose.DefaultMapProperties
@@ -23,7 +25,11 @@ import com.utsman.osmandcompose.OpenStreetMap
 import com.utsman.osmandcompose.ZoomButtonVisibility
 import com.utsman.osmandcompose.rememberCameraState
 import com.utsman.osmandcompose.rememberMarkerState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.iesharia.viewmodelroommap.data.AppDatabase
+import org.iesharia.viewmodelroommap.data.MarkerType
 import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase
 import org.osmdroid.tileprovider.tilesource.XYTileSource
 import org.osmdroid.util.GeoPoint
@@ -46,21 +52,30 @@ val GoogleSat: OnlineTileSourceBase = object : XYTileSource(
     }
 }
 @Composable
-fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase) {
+fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase, markerViewModel: MarkerViewModel) {
+    // Obtener el LifecycleOwner dentro del Composable
+    val lifecycleOwner = LocalLifecycleOwner.current
+    // Estado para almacenar los marcadores observados
+    var markers by remember { mutableStateOf(emptyList<org.iesharia.viewmodelroommap.data.Marker>()) }
 
-//    LaunchedEffect(Unit) {
-//    CoroutineScope(Dispatchers.IO).launch {
-//        try {
-//            val tipoTarea = MarkerType(0,"Restaurante")
-//            database.markDao().insertMarkerType(tipoTarea)
-//            Log.i("DAM2", "Insertado")
-//        }catch (e: Exception){
-//            Log.i("DAM2", e.toString())
-//        }
-//    }
-//    }
-//    var marks = database.markDao().getAllMarkers()
-//    Log.i("DAM2", marks.toString())
+    markerViewModel.allMarkers.observe(lifecycleOwner) { markerList ->
+        markers = markerList
+    }
+    LaunchedEffect(Unit) {
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val marker = org.iesharia.viewmodelroommap.data.Marker(id = 0, title = "Restaurante",
+                latitude = 28.961698466762456, longitude = -13.553142934685711, typeId = 1
+            )
+            database.markDao().insertMarker(marker)
+            Log.i("DAM2", "Insertado")
+        }catch (e: Exception){
+            Log.i("DAM2", e.toString())
+        }
+    }
+    }
+    var marks = database.markDao().getAllMarkers()
+    Log.i("DAM2", marks.toString())
     // define camera state
     val cameraState = rememberCameraState {
         geoPoint = GeoPoint(28.957473, -13.554514)
@@ -94,7 +109,7 @@ fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase) {
         // add marker here
         Marker(
             state = depokMarkerState, // add marker state
-            title = "Arrecife Gran Hotel",
+            title = "Gran Hotel",
             snippet = "click"
         ){
             // create info window node
