@@ -199,13 +199,13 @@ fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase, markerViewMo
                     geoPoint = GeoPoint(marker.latitude, marker.longitude)
                 ),
                 title = marker.title,
-                snippet = "Haga clic aquí",
+                snippet = "",
                 icon = customIcon
             ) {
                 Column(
                     modifier = Modifier
                         .size(100.dp)
-                        .background(color = Color.Gray, shape = RoundedCornerShape(4.dp))
+                        .background(color = Color.White, shape = RoundedCornerShape(4.dp))
                 ) {
                     Text(text = it.title)
                     Text(text = it.snippet, fontSize = 10.sp)
