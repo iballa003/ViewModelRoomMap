@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,13 +23,7 @@ import com.utsman.osmandcompose.OpenStreetMap
 import com.utsman.osmandcompose.ZoomButtonVisibility
 import com.utsman.osmandcompose.rememberCameraState
 import com.utsman.osmandcompose.rememberMarkerState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.iesharia.viewmodelroommap.data.AppDatabase
-import org.iesharia.viewmodelroommap.data.Marker
-import org.iesharia.viewmodelroommap.data.MarkerType
-import org.iesharia.viewmodelroommap.ui.theme.ViewModelRoomMapTheme
 import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase
 import org.osmdroid.tileprovider.tilesource.XYTileSource
 import org.osmdroid.util.GeoPoint
@@ -55,9 +47,6 @@ val GoogleSat: OnlineTileSourceBase = object : XYTileSource(
 }
 @Composable
 fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase) {
-    MarkerViewModel.allMarkers.observe(this) { markers ->
-        addMarkersToMap(markers)
-    }
 
 //    LaunchedEffect(Unit) {
 //    CoroutineScope(Dispatchers.IO).launch {
