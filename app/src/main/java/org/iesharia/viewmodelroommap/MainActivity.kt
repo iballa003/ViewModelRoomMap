@@ -28,6 +28,8 @@ import com.utsman.osmandcompose.OpenStreetMap
 import com.utsman.osmandcompose.ZoomButtonVisibility
 import com.utsman.osmandcompose.rememberCameraState
 import com.utsman.osmandcompose.rememberMarkerState
+import org.iesharia.viewmodelroommap.data.AppDatabase
+import org.iesharia.viewmodelroommap.ui.MyMapView
 import org.iesharia.viewmodelroommap.ui.theme.ViewModelRoomMapTheme
 import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -35,32 +37,18 @@ import org.osmdroid.tileprovider.tilesource.XYTileSource
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.util.MapTileIndex
 
-
-val GoogleSat: OnlineTileSourceBase = object : XYTileSource(
-    "Google-Sat",
-    0, 19, 256, ".png", arrayOf<String>(
-        "https://mt0.google.com",
-        "https://mt1.google.com",
-        "https://mt2.google.com",
-        "https://mt3.google.com",
-
-        )
-) {
-    override fun getTileURLString(pTileIndex: Long): String {
-        return baseUrl + "/vt/lyrs=s&x=" + MapTileIndex.getX(pTileIndex) + "&y=" + MapTileIndex.getY(
-            pTileIndex
-        ) + "&z=" + MapTileIndex.getZoom(pTileIndex)
-    }
-}
 class MainActivity : ComponentActivity() {
+    private lateinit var database: AppDatabase
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        database = AppDatabase.getDatabase(this)
         enableEdgeToEdge()
         setContent {
             ViewModelRoomMapTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     MyMapView(
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding),
+                        database
                     )
                 }
             }
@@ -68,56 +56,3 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun MyMapView(modifier: Modifier = Modifier) {
-    // define camera state
-    val cameraState = rememberCameraState {
-        geoPoint = GeoPoint(28.957473, -13.554514)
-        zoom = 17.0 // optional, default is 5.0
-    }
-
-    // define properties with remember with default value
-    var mapProperties by remember {
-        mutableStateOf(DefaultMapProperties)
-    }
-
-    // setup mapProperties in side effect
-    SideEffect {
-        mapProperties = mapProperties
-            //.copy(isTilesScaledToDpi = true)
-            //.copy(tileSources = TileSourceFactory.MAPNIK)
-            .copy(tileSources = GoogleSat)
-            .copy(isEnableRotationGesture = true)
-            .copy(zoomButtonVisibility = ZoomButtonVisibility.NEVER)
-    }
-
-    // define marker state
-    val depokMarkerState = rememberMarkerState(
-        geoPoint = GeoPoint(28.957473, -13.554514)
-    )
-
-
-    OpenStreetMap(
-        modifier = Modifier.fillMaxSize(),
-        cameraState = cameraState,
-        properties = mapProperties // add properties
-    ){
-        // add marker here
-        Marker(
-            state = depokMarkerState, // add marker state
-            title = "Arrecife Gran Hotel",
-            snippet = "click"
-        ){
-            // create info window node
-            Column(
-                modifier = Modifier
-                    .size(100.dp)
-                    .background(color = Color.Gray, shape = RoundedCornerShape(4.dp))
-            ) {
-                // setup content of info window
-                Text(text = it.title)
-                Text(text = it.snippet, fontSize = 10.sp)
-            }
-        }
-    }
-}
