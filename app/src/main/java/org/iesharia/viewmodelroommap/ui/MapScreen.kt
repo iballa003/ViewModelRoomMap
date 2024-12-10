@@ -1,5 +1,6 @@
 package org.iesharia.viewmodelroommap.ui
 
+import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -16,7 +17,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.utsman.osmandcompose.DefaultMapProperties
@@ -28,6 +31,7 @@ import com.utsman.osmandcompose.rememberMarkerState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.iesharia.viewmodelroommap.R
 import org.iesharia.viewmodelroommap.data.AppDatabase
 import org.iesharia.viewmodelroommap.data.MarkerType
 import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase
@@ -55,25 +59,37 @@ val GoogleSat: OnlineTileSourceBase = object : XYTileSource(
 fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase, markerViewModel: MarkerViewModel) {
     // Obtener el LifecycleOwner dentro del Composable
     val lifecycleOwner = LocalLifecycleOwner.current
+    val context = LocalContext.current
     // Estado para almacenar los marcadores observados
     var markers by remember { mutableStateOf(emptyList<org.iesharia.viewmodelroommap.data.Marker>()) }
 
     markerViewModel.allMarkers.observe(lifecycleOwner) { markerList ->
         markers = markerList
     }
-    LaunchedEffect(Unit) {
-    CoroutineScope(Dispatchers.IO).launch {
-        try {
-            val marker = org.iesharia.viewmodelroommap.data.Marker(id = 0, title = "Restaurante",
-                latitude = 28.961698466762456, longitude = -13.553142934685711, typeId = 1
-            )
-            database.markDao().insertMarker(marker)
-            Log.i("DAM2", "Insertado")
-        }catch (e: Exception){
-            Log.i("DAM2", e.toString())
-        }
-    }
-    }
+//        LaunchedEffect(Unit) {
+//    CoroutineScope(Dispatchers.IO).launch {
+//        try {
+//            val tipoTarea = MarkerType(0,"Hotel")
+//            database.markDao().insertMarkerType(tipoTarea)
+//            Log.i("DAM2", "Insertado")
+//        }catch (e: Exception){
+//            Log.i("DAM2", e.toString())
+//        }
+//    }
+//    }
+//    LaunchedEffect(Unit) {
+//    CoroutineScope(Dispatchers.IO).launch {
+//        try {
+//            val marker = org.iesharia.viewmodelroommap.data.Marker(id = 0, title = "Hostal San Ginés",
+//                latitude = 28.96281644139363, longitude = -13.549590967037258, typeId = 1
+//            )
+//            database.markDao().insertMarker(marker)
+//            Log.i("DAM2", "Insertado")
+//        }catch (e: Exception){
+//            Log.i("DAM2", e.toString())
+//        }
+//    }
+//    }
     var marks = database.markDao().getAllMarkers()
     Log.i("DAM2", marks.toString())
     // define camera state
@@ -107,39 +123,29 @@ fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase, markerViewMo
         properties = mapProperties // add properties
     ){
         // add marker here
-        Marker(
-            state = depokMarkerState, // add marker state
-            title = "Gran Hotel",
-            snippet = "click"
-        ){
-            // create info window node
-            Column(
-                modifier = Modifier
-                    .size(100.dp)
-                    .background(color = Color.Gray, shape = RoundedCornerShape(4.dp))
+        // Añadir marcadores observados al mapa
+        markers.forEach { marker ->
+            val customIcon: Drawable? by remember {
+                mutableStateOf(context.getDrawable(R.drawable.restaurante))
+            }
+            Marker(
+                state = rememberMarkerState(
+                    geoPoint = GeoPoint(marker.latitude, marker.longitude)
+                ),
+                title = marker.title,
+                snippet = "Haga clic aquí",
+                icon = customIcon
             ) {
-                // setup content of info window
-                Text(text = it.title)
-                Text(text = it.snippet, fontSize = 10.sp)
+                Column(
+                    modifier = Modifier
+                        .size(100.dp)
+                        .background(color = Color.Gray, shape = RoundedCornerShape(4.dp))
+                ) {
+                    Text(text = it.title)
+                    Text(text = it.snippet, fontSize = 10.sp)
+                }
             }
         }
-        Marker(
-            state = rememberMarkerState(
-                geoPoint = GeoPoint(28.958871, -13.553784)
-            ), // add marker state
-            title = "Carretera",
-            snippet = "click",
-        ){
-            // create info window node
-            Column(
-                modifier = Modifier
-                    .size(100.dp)
-                    .background(color = Color.Gray, shape = RoundedCornerShape(4.dp))
-            ) {
-                // setup content of info window
-                Text(text = it.title)
-                Text(text = it.snippet, fontSize = 10.sp)
-            }
-        }
+
     }
 }
