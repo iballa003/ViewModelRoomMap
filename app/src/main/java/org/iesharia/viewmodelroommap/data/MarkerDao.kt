@@ -11,6 +11,9 @@ interface MarkerDao {
     @Query("SELECT * FROM Marker")
     fun getAllMarkers(): LiveData<List<Marker>>
 
+    @Query("SELECT * FROM MarkerType")
+    fun getAllMarkersType(): List<MarkerType>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMarkers(markers: List<Marker>)
 

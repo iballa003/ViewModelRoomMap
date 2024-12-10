@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.utsman.osmandcompose.DefaultMapProperties
@@ -62,7 +61,7 @@ fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase, markerViewMo
     val context = LocalContext.current
     // Estado para almacenar los marcadores observados
     var markers by remember { mutableStateOf(emptyList<org.iesharia.viewmodelroommap.data.Marker>()) }
-
+    var markersTypes by remember { mutableStateOf<List<MarkerType>?>(null) }
     markerViewModel.allMarkers.observe(lifecycleOwner) { markerList ->
         markers = markerList
     }
@@ -146,32 +145,18 @@ fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase, markerViewMo
             typeId = 2
         ),
     )
-//        LaunchedEffect(Unit) {
-//    CoroutineScope(Dispatchers.IO).launch {
-//        try {
-//            val tipoTarea = MarkerType(0,"Centro comercial")
-//            database.markDao().insertMarkerType(tipoTarea)
-//            Log.i("DAM2", "Insertado")
-//        }catch (e: Exception){
-//            Log.i("DAM2", e.toString())
-//        }
-//    }
-//    }
-//    LaunchedEffect(Unit) {
-//    CoroutineScope(Dispatchers.IO).launch {
-//        try {
-//            val marker = org.iesharia.viewmodelroommap.data.Marker(id = 0, title = "Hostal San Ginés",
-//                latitude = 28.96281644139363, longitude = -13.549590967037258, typeId = 1
-//            )
-//            database.markDao().insertMarker(marker)
-//            Log.i("DAM2", "Insertado")
-//        }catch (e: Exception){
-//            Log.i("DAM2", e.toString())
-//        }
-//    }
-//    }
-    var marks = database.markDao().getAllMarkers()
-    Log.i("DAM2", marks.toString())
+    //markerViewModel.insertData(initialMarkerTypes,initialMarkers)
+    LaunchedEffect(Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                markersTypes = database.markDao().getAllMarkersType()
+                Log.i("DAM2", markersTypes.toString())
+            }
+            catch (e: Exception){
+                Log.i("prueba", "Error: $e")
+            }
+        }
+    }
     // define camera state
     val cameraState = rememberCameraState {
         geoPoint = GeoPoint(28.957473, -13.554514)
@@ -190,12 +175,6 @@ fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase, markerViewMo
             .copy(isEnableRotationGesture = true)
             .copy(zoomButtonVisibility = ZoomButtonVisibility.NEVER)
     }
-
-    // define marker state
-    val depokMarkerState = rememberMarkerState(
-        geoPoint = GeoPoint(28.957473, -13.554514)
-    )
-
 
     OpenStreetMap(
         modifier = Modifier.fillMaxSize(),
