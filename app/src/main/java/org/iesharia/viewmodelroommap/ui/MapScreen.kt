@@ -1,5 +1,6 @@
 package org.iesharia.viewmodelroommap.ui
 
+import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.compose.foundation.background
@@ -54,6 +55,7 @@ val GoogleSat: OnlineTileSourceBase = object : XYTileSource(
         ) + "&z=" + MapTileIndex.getZoom(pTileIndex)
     }
 }
+@SuppressLint("DiscouragedApi")
 @Composable
 fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase, markerViewModel: MarkerViewModel) {
     // Obtener el LifecycleOwner dentro del Composable
@@ -65,6 +67,7 @@ fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase, markerViewMo
     markerViewModel.allMarkers.observe(lifecycleOwner) { markerList ->
         markers = markerList
     }
+
     val initialMarkerTypes = listOf(
         MarkerType(typeName = "Hotel"),
         MarkerType(typeName = "Restaurante"),
@@ -145,8 +148,9 @@ fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase, markerViewMo
             typeId = 2
         ),
     )
-    //markerViewModel.insertData(initialMarkerTypes,initialMarkers)
+
     LaunchedEffect(Unit) {
+        //markerViewModel.insertData(initialMarkerTypes,initialMarkers)
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 markersTypes = database.markDao().getAllMarkersType()
@@ -183,9 +187,13 @@ fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase, markerViewMo
     ){
         // Añadir marcadores observados al mapa
         markers.forEach { marker ->
-            val customIcon: Drawable? by remember {
-                mutableStateOf(context.getDrawable(R.drawable.restaurante))
+            val currentMakerType = markersTypes?.firstOrNull { it.id == marker.typeId }
+            var customIcon : Drawable? = context.getDrawable(R.drawable.restaurante)
+            if (currentMakerType != null) {
+                Log.i("DAM2",currentMakerType.typeName)
+                customIcon = context.resources.getDrawable(context.resources.getIdentifier(currentMakerType.typeName.lowercase(), "drawable", context.packageName), null)
             }
+
             Marker(
                 state = rememberMarkerState(
                     geoPoint = GeoPoint(marker.latitude, marker.longitude)
