@@ -103,6 +103,48 @@ fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase, markerViewMo
             longitude = -13.554697194527124,
             typeId = 2
         ),
+        org.iesharia.viewmodelroommap.data.Marker(
+            title = "Hotel Lancelot",
+            latitude = 28.958389167948553,
+            longitude = -13.555746068106155,
+            typeId = 1
+        ),
+        org.iesharia.viewmodelroommap.data.Marker(
+            title = "Librería Papelería Diama",
+            latitude = 28.960771796396745,
+            longitude = -13.55775151019774,
+            typeId = 4
+        ),
+        org.iesharia.viewmodelroommap.data.Marker(
+            title = "Supermercado Chacon",
+            latitude = 28.96037021113483,
+            longitude = -13.556036976546041,
+            typeId = 3
+        ),
+        org.iesharia.viewmodelroommap.data.Marker(
+            title = "Hotel Diamar",
+            latitude = 28.95887544545295,
+            longitude = -13.557989152761667,
+            typeId = 1
+        ),
+        org.iesharia.viewmodelroommap.data.Marker(
+            title = "Galicia Nuestra Casa",
+            latitude = 28.96403916007604,
+            longitude = -13.557078273726095,
+            typeId = 2
+        ),
+        org.iesharia.viewmodelroommap.data.Marker(
+            title = "Centro Comercial Arrecife",
+            latitude = 28.965796477801597,
+            longitude = -13.553202874544542,
+            typeId = 4
+        ),
+        org.iesharia.viewmodelroommap.data.Marker(
+            title = "Noodle Zone",
+            latitude = 28.96581534410965,
+            longitude = -13.551635472389703,
+            typeId = 2
+        ),
     )
 //        LaunchedEffect(Unit) {
 //    CoroutineScope(Dispatchers.IO).launch {
