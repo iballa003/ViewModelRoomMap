@@ -55,19 +55,23 @@ val GoogleSat: OnlineTileSourceBase = object : XYTileSource(
 }
 @Composable
 fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase) {
-    LaunchedEffect(Unit) {
-    CoroutineScope(Dispatchers.IO).launch {
-        try {
-            val tipoTarea = MarkerType(0,"Restaurante")
-            database.markDao().insertMarkerType(tipoTarea)
-            Log.i("DAM2", "Insertado")
-        }catch (e: Exception){
-            Log.i("DAM2", e.toString())
-        }
+    MarkerViewModel.allMarkers.observe(this) { markers ->
+        addMarkersToMap(markers)
     }
-    }
-    var marks = database.markDao().getAllMarkers()
-    Log.i("DAM2", marks.toString())
+
+//    LaunchedEffect(Unit) {
+//    CoroutineScope(Dispatchers.IO).launch {
+//        try {
+//            val tipoTarea = MarkerType(0,"Restaurante")
+//            database.markDao().insertMarkerType(tipoTarea)
+//            Log.i("DAM2", "Insertado")
+//        }catch (e: Exception){
+//            Log.i("DAM2", e.toString())
+//        }
+//    }
+//    }
+//    var marks = database.markDao().getAllMarkers()
+//    Log.i("DAM2", marks.toString())
     // define camera state
     val cameraState = rememberCameraState {
         geoPoint = GeoPoint(28.957473, -13.554514)
