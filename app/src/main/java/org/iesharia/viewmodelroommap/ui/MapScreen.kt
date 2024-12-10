@@ -66,17 +66,55 @@ fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase, markerViewMo
     markerViewModel.allMarkers.observe(lifecycleOwner) { markerList ->
         markers = markerList
     }
-        LaunchedEffect(Unit) {
-    CoroutineScope(Dispatchers.IO).launch {
-        try {
-            val tipoTarea = MarkerType(0,"Supermercado")
-            database.markDao().insertMarkerType(tipoTarea)
-            Log.i("DAM2", "Insertado")
-        }catch (e: Exception){
-            Log.i("DAM2", e.toString())
-        }
-    }
-    }
+    val initialMarkerTypes = listOf(
+        MarkerType(typeName = "Hotel"),
+        MarkerType(typeName = "Restaurante"),
+        MarkerType(typeName = "Supermercado"),
+        MarkerType(typeName = "Tienda")
+    )
+    val initialMarkers = listOf(
+        org.iesharia.viewmodelroommap.data.Marker(
+            title = "La Lupe Cantina",
+            latitude = 28.958842410104822,
+            longitude = -13.552473697796856,
+            typeId = 2
+        ),
+        org.iesharia.viewmodelroommap.data.Marker(
+            title = "Apartamentos Islamar",
+            latitude = 28.95809131371148,
+            longitude = -13.55317511918529,
+            typeId = 1
+        ),
+        org.iesharia.viewmodelroommap.data.Marker(
+            title = "SuperDino Atlántida",
+            latitude = 28.961011277027847,
+            longitude = -13.549155830467473,
+            typeId = 3
+        ),
+        org.iesharia.viewmodelroommap.data.Marker(
+            title = "Tienda Movistar",
+            latitude = 28.96098888371057,
+            longitude = -13.556464833212232,
+            typeId = 4
+        ),
+        org.iesharia.viewmodelroommap.data.Marker(
+            title = "Hamburguesería Cuco Triana",
+            latitude = 28.960912549603332,
+            longitude = -13.554697194527124,
+            typeId = 2
+        ),
+    )
+//        LaunchedEffect(Unit) {
+//    CoroutineScope(Dispatchers.IO).launch {
+//        try {
+//            val tipoTarea = MarkerType(0,"Centro comercial")
+//            database.markDao().insertMarkerType(tipoTarea)
+//            Log.i("DAM2", "Insertado")
+//        }catch (e: Exception){
+//            Log.i("DAM2", e.toString())
+//        }
+//    }
+//    }
 //    LaunchedEffect(Unit) {
 //    CoroutineScope(Dispatchers.IO).launch {
 //        try {
