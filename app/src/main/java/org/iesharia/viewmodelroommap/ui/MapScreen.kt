@@ -1,5 +1,6 @@
 package org.iesharia.viewmodelroommap.ui
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -23,7 +25,12 @@ import com.utsman.osmandcompose.OpenStreetMap
 import com.utsman.osmandcompose.ZoomButtonVisibility
 import com.utsman.osmandcompose.rememberCameraState
 import com.utsman.osmandcompose.rememberMarkerState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.iesharia.viewmodelroommap.data.AppDatabase
+import org.iesharia.viewmodelroommap.data.Marker
+import org.iesharia.viewmodelroommap.data.MarkerType
 import org.iesharia.viewmodelroommap.ui.theme.ViewModelRoomMapTheme
 import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase
 import org.osmdroid.tileprovider.tilesource.XYTileSource
@@ -48,7 +55,19 @@ val GoogleSat: OnlineTileSourceBase = object : XYTileSource(
 }
 @Composable
 fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase) {
-
+    LaunchedEffect(Unit) {
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val tipoTarea = MarkerType(0,"Restaurante")
+            database.markDao().insertMarkerType(tipoTarea)
+            Log.i("DAM2", "Insertado")
+        }catch (e: Exception){
+            Log.i("DAM2", e.toString())
+        }
+    }
+    }
+    var marks = database.markDao().getAllMarkers()
+    Log.i("DAM2", marks.toString())
     // define camera state
     val cameraState = rememberCameraState {
         geoPoint = GeoPoint(28.957473, -13.554514)
@@ -63,8 +82,6 @@ fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase) {
     // setup mapProperties in side effect
     SideEffect {
         mapProperties = mapProperties
-            //.copy(isTilesScaledToDpi = true)
-            //.copy(tileSources = TileSourceFactory.MAPNIK)
             .copy(tileSources = GoogleSat)
             .copy(isEnableRotationGesture = true)
             .copy(zoomButtonVisibility = ZoomButtonVisibility.NEVER)
