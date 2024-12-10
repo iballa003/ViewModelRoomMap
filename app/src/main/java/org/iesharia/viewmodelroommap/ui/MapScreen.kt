@@ -66,17 +66,17 @@ fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase, markerViewMo
     markerViewModel.allMarkers.observe(lifecycleOwner) { markerList ->
         markers = markerList
     }
-//        LaunchedEffect(Unit) {
-//    CoroutineScope(Dispatchers.IO).launch {
-//        try {
-//            val tipoTarea = MarkerType(0,"Hotel")
-//            database.markDao().insertMarkerType(tipoTarea)
-//            Log.i("DAM2", "Insertado")
-//        }catch (e: Exception){
-//            Log.i("DAM2", e.toString())
-//        }
-//    }
-//    }
+        LaunchedEffect(Unit) {
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val tipoTarea = MarkerType(0,"Supermercado")
+            database.markDao().insertMarkerType(tipoTarea)
+            Log.i("DAM2", "Insertado")
+        }catch (e: Exception){
+            Log.i("DAM2", e.toString())
+        }
+    }
+    }
 //    LaunchedEffect(Unit) {
 //    CoroutineScope(Dispatchers.IO).launch {
 //        try {
@@ -122,7 +122,6 @@ fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase, markerViewMo
         cameraState = cameraState,
         properties = mapProperties // add properties
     ){
-        // add marker here
         // Añadir marcadores observados al mapa
         markers.forEach { marker ->
             val customIcon: Drawable? by remember {
