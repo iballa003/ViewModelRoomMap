@@ -58,16 +58,17 @@ val GoogleSat: OnlineTileSourceBase = object : XYTileSource(
 @SuppressLint("DiscouragedApi")
 @Composable
 fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase, markerViewModel: MarkerViewModel) {
-    // Obtener el LifecycleOwner dentro del Composable
+    // Get the LifecycleOwner inside the Composable
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
-    // Estado para almacenar los marcadores observados
+    // State to store observed markers
     var markers by remember { mutableStateOf(emptyList<org.iesharia.viewmodelroommap.data.Marker>()) }
     var markersTypes by remember { mutableStateOf<List<MarkerType>?>(null) }
+
     markerViewModel.allMarkers.observe(lifecycleOwner) { markerList ->
         markers = markerList
     }
-
+    // Initials data
     val initialMarkerTypes = listOf(
         MarkerType(typeName = "Hotel"),
         MarkerType(typeName = "Restaurante"),
@@ -157,7 +158,7 @@ fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase, markerViewMo
                 Log.i("DAM2", markersTypes.toString())
             }
             catch (e: Exception){
-                Log.i("prueba", "Error: $e")
+                Log.i("DAM2", "Error: $e")
             }
         }
     }
@@ -185,7 +186,7 @@ fun MyMapView(modifier: Modifier = Modifier, database: AppDatabase, markerViewMo
         cameraState = cameraState,
         properties = mapProperties // add properties
     ){
-        // Añadir marcadores observados al mapa
+        // Add observed markers to the map
         markers.forEach { marker ->
             val currentMakerType = markersTypes?.firstOrNull { it.id == marker.typeId }
             var customIcon : Drawable? = context.getDrawable(R.drawable.restaurante)
